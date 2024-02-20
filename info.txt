@@ -1,0 +1,16 @@
+Project is build to automate application deployment end-to-end using Static slave nodes
+
+1) Dockerfile + app code (index.html) is created and uploaded to github by developer
+2) Spin off EC2 instance - 1 using terraform script(maim.tf) which will install below package and pre-req steps needed for docker host to build the image
+	- Package : java, docker , git  # git is required for code download from github
+	  Folder : myjenkins   ## used as workspace
+3) Spin off EC2 Instance - 2 using terraform (main.tf-need some changes) which will use for containers
+	- Package : java, docker   # git is not required becuase we are downloading code on this node
+
+4) Add nodes in Jenkins 
+	- one for download code, build image and push custom image to docker hub  : Labels: mydocker
+	- one for running the container : Labels: mycontainer
+
+5) Job 1 : create job to download code from git using github repo url and map this job with "mydocker" label. Also in execute shell section trigger "dockerbuild.sh" script which will help to execute commands
+
+6) Job 2: Create job to run container and map this job to "mycontainer", also make sure to enable trigger which will run this job only post job1 is stable
